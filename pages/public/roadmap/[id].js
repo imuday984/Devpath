@@ -3,42 +3,32 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export default function PublicRoadmap() {
-  const router = useRouter();
-  const { id } = router.query;
+  const { id } = useRouter().query;
   const [roadmap, setRoadmap] = useState(null);
 
   useEffect(() => {
-    if (id) fetchRoadmap();
+    if (id) {
+      fetch(`/api/roadmap/${id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.isPublic) setRoadmap(data);
+        });
+    }
   }, [id]);
 
-  const fetchRoadmap = async () => {
-    const res = await fetch(`/api/roadmap/${id}`);
-    const data = await res.json();
-    if (!data.isPublic) return router.push("/dashboard");
-    setRoadmap(data);
-  };
-
-  if (!roadmap) return <p className="p-8">Loading...</p>;
+  if (!roadmap) return <div className="p-6">Not found or private roadmap.</div>;
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold">{roadmap.title}</h1>
-      <p className="text-gray-600 mb-4">{roadmap.description}</p>
-
+    <div className="p-6 max-w-2xl mx-auto">
+      <h1 className="text-2xl font-bold mb-2">{roadmap.title}</h1>
+      <p className="mb-4">{roadmap.description}</p>
       <ul className="space-y-2">
-        {roadmap.steps.map((step, index) => (
-          <li
-            key={index}
-            className={`p-2 border rounded ${
-              step.completed ? "bg-green-100 line-through" : "bg-white"
-            }`}
-          >
+        {roadmap.steps.map((step, i) => (
+          <li key={i} className="p-2 border rounded bg-white">
             {step.title}
           </li>
         ))}
       </ul>
-
-      <p className="text-sm text-gray-500 mt-6">Shared Roadmap — Read-only View</p>
     </div>
   );
 }

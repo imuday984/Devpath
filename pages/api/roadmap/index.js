@@ -1,9 +1,9 @@
 // pages/api/roadmap/index.js
-import connectDB from "../../../lib/db";
+import { connectToDatabase } from "../../../lib/mongodb";
 import Roadmap from "../../../models/Roadmap";
 
 export default async function handler(req, res) {
-  await connectDB();
+  await connectToDatabase();
 
   if (req.method === "GET") {
     const roadmaps = await Roadmap.find();
@@ -11,11 +11,9 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "POST") {
-    const { userId, title, description, steps, isPublic } = req.body;
-    const newRoadmap = new Roadmap({ userId, title, description, steps, isPublic });
-    await newRoadmap.save();
+    const newRoadmap = await Roadmap.create(req.body);
     return res.status(201).json(newRoadmap);
   }
 
-  res.status(405).json({ message: "Method not allowed" });
+  res.status(405).end(); // Method Not Allowed
 }
