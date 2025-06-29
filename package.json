@@ -15,7 +15,8 @@
   "dependencies": {
     "firebase": "^11.9.1",
     "framer-motion": "^12.19.2",
-    "mongoose": "^8.16.1"
+    "mongoose": "^8.16.1",
+    "next": "^15.3.4"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.21",
